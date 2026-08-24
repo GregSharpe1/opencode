@@ -1,3 +1,5 @@
+FROM cloudflare/cloudflared:2024.12.2 AS cloudflared
+
 FROM alpine AS base
 
 # Disable the runtime transpiler cache by default inside Docker containers.
@@ -5,6 +7,7 @@ FROM alpine AS base
 ARG BUN_RUNTIME_TRANSPILER_CACHE_PATH=0
 ENV BUN_RUNTIME_TRANSPILER_CACHE_PATH=${BUN_RUNTIME_TRANSPILER_CACHE_PATH}
 RUN apk add libgcc libstdc++ ripgrep
+COPY --from=cloudflared /usr/local/bin/cloudflared /usr/local/bin/cloudflared
 
 FROM base AS build-amd64
 COPY dist/opencode-linux-x64-baseline-musl/bin/opencode /usr/local/bin/opencode
